@@ -22,7 +22,10 @@
     $ python -m exporter --redis.addr=redis://localhost:6379
 """
 
-__version__ = "1.0.0"
+try:
+    from ._version import version as __version__
+except ImportError:
+    __version__ = "0.0.0"
 
 from .config import Options, get_env, get_env_bool, get_env_float
 from .exporter import RedisCollector

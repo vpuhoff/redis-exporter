@@ -253,13 +253,9 @@ wheels = [
 
 [[package]]
 name = "redis-exporter-py"
-version = "1.0.0"
 source = { editable = "." }
 dependencies = [
-    { name = "fakeredis" },
     { name = "prometheus-client" },
-    { name = "pytest" },
-    { name = "pytest-cov" },
     { name = "redis" },
 ]
 
@@ -273,10 +269,7 @@ dev = [
 
 [package.metadata]
 requires-dist = [
-    { name = "fakeredis", specifier = ">=2.32.0" },
     { name = "prometheus-client", specifier = ">=0.19.0" },
-    { name = "pytest", specifier = ">=8.4.2" },
-    { name = "pytest-cov", specifier = ">=7.0.0" },
     { name = "redis", specifier = ">=5.0.0" },
 ]
 

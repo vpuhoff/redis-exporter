@@ -32,3 +32,4 @@ htmlcov/
 .pytest_cache/
 *.cover
 .venv/
+exporter/_version.py
