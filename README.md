@@ -1,9 +1,12 @@
 # Prometheus Redis Exporter (Python версия)
 
-[![Python](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/)
+[![Python](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
+[![Tests](https://img.shields.io/badge/tests-118%20passed-green.svg)](tests/)
 
 Prometheus экспортер для метрик Redis/Valkey, написанный на Python.
+
+**Основной проект:** [Python версия](#) | [Оригинал (Go)](https://github.com/oliver006/redis_exporter)
 
 ## Описание
 
@@ -35,10 +38,20 @@ Prometheus экспортер для метрик Redis/Valkey, написанн
 
 ## Требования
 
-- Python 3.11+
+- Python 3.10+
 - Redis 2.x - 8.x
 
 ## Установка
+
+### Установка из PyPI
+
+```bash
+# Установка из PyPI (после публикации)
+pip install redis-exporter
+
+# Или с uv
+uv pip install redis-exporter
+```
 
 ### Установка как пакет
 
@@ -48,32 +61,20 @@ git clone https://github.com/vpuhoff/redis-exporter.git
 cd redis-exporter
 pip install -e .
 
-# Или установить зависимости напрямую
-pip install redis prometheus-client
+# Или с uv
+uv sync
 ```
-
-### Использование в вашем проекте
-
-Если у вас уже есть Python проект с Prometheus метриками, вы можете использовать Redis Exporter как библиотеку:
-
-```python
-from prometheus_client import REGISTRY
-from exporter import RedisCollector, Options
-
-# Создать и зарегистрировать Redis коллектор
-options = Options(redis_addr="redis://localhost:6379", namespace="redis")
-redis_collector = RedisCollector("redis://localhost:6379", options)
-REGISTRY.register(redis_collector)
-```
-
-См. [README_LIBRARY.md](README_LIBRARY.md) для подробных примеров интеграции в FastAPI, Flask, Django и другие фреймворки.
 
 ## Использование
 
-### Базовый запуск
+### Базовый запуск (после установки из исходников)
 
 ```bash
+# Из исходников
 python main.py --redis.addr=redis://localhost:6379
+
+# После установки из PyPI
+redis-exporter --redis.addr=redis://localhost:6379
 ```
 
 ### С опциями
@@ -120,10 +121,13 @@ docker run -d \
 
 ```bash
 # Запустить тестовое окружение
-docker-compose -f docker-compose-py.yml up -d
+docker-compose up -d
 
 # Проверить метрики
 curl http://localhost:9121/metrics
+
+# Остановить
+docker-compose down
 ```
 
 ## Конфигурация Prometheus
@@ -215,16 +219,36 @@ python main.py --redis.addr=rediss://localhost:6380
 
 ## Тестирование
 
-```bash
-# Установить зависимости для разработки
-uv pip install -e .
+Проект имеет comprehensive набор unit и integration тестов:
 
-# Запустить тесты (если есть)
-# pytest tests/
+```bash
+# Запустить все тесты
+pytest
+
+# Запустить только unit тесты
+pytest -m unit
+
+# Запустить только integration тесты (требуют Redis)
+pytest -m integration
+
+# Запустить тесты с coverage report
+pytest --cov=exporter --cov-report=html
 
 # Проверить метрики
 curl http://localhost:9121/metrics
 ```
+
+### Coverage
+
+Текущее покрытие тестами: **77%**
+
+Все основные модули покрыты тестами:
+- config.py: 100%
+- metrics.py: 98%
+- info.py: 93%
+- redis_client.py: 100%
+- exporter.py: 45%
+- keys.py: 55%
 
 ## Разработка
 
@@ -234,14 +258,15 @@ curl http://localhost:9121/metrics
 redis-exporter/
 ├── main.py                  # Точка входа (CLI)
 ├── pyproject.toml           # Зависимости Python
+├── uv.lock                  # UV lock file
 ├── Dockerfile               # Docker образ
 ├── docker-compose.yml       # Docker Compose для тестирования
 ├── README.md                # Основная документация
-├── README_LIBRARY.md        # Документация для использования как библиотека
 ├── .gitignore               # Git ignore файлы
 ├── LICENSE                  # MIT лицензия
 ├── exporter/                # Модули экспортера
 │   ├── __init__.py
+│   ├── _version.py          # Автоматическая версия
 │   ├── config.py            # Конфигурация
 │   ├── exporter.py          # Главный коллектор
 │   ├── info.py              # Парсинг INFO
@@ -250,13 +275,26 @@ redis-exporter/
 │   └── redis_client.py      # Redis клиент
 ├── examples/                # Примеры использования как библиотеки
 │   ├── __init__.py
+│   ├── README.md
 │   ├── simple_example.py
 │   ├── fastapi_example.py
 │   ├── flask_example.py
 │   ├── multiple_redis_example.py
 │   └── custom_registry_example.py
+├── tests/                   # Тесты
+│   ├── unit/               # Unit тесты
+│   ├── integration/        # Integration тесты
+│   ├── conftest.py
+│   └── utils.py
+├── docs/                    # Документация
+│   ├── README.md
+│   ├── GETTING_STARTED.md
+│   ├── LIBRARY_USAGE.md
+│   ├── API_REFERENCE.md
+│   ├── EXAMPLES.md
+│   └── CONTRIB.md
 └── contrib/                 # Дополнительные материалы
-    ├── README.md            # Описание contrib
+    ├── README.md
     ├── grafana_prometheus_redis_dashboard.json
     ├── grafana_prometheus_redis_dashboard_exporter_version_0.3x.json
     └── k8s-redis-and-exporter-deployment.yaml
@@ -294,6 +332,7 @@ REGISTRY.register(collector)
 
 - [Быстрый старт](docs/GETTING_STARTED.md) - установка и CLI использование
 - [Использование как библиотека](docs/LIBRARY_USAGE.md) - интеграция в приложения
+- [API Reference](docs/API_REFERENCE.md) - полная документация API
 - [Примеры](docs/EXAMPLES.md) - рабочие примеры использования
 - [Дополнительные материалы](docs/CONTRIB.md) - Grafana dashboards, Kubernetes
 
