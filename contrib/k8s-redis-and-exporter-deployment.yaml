@@ -32,7 +32,7 @@ spec:
         ports:
         - containerPort: 6379
       - name: redis-exporter
-        image: oliver006/redis_exporter:latest
+        image: YOUR_IMAGE/redis_exporter:latest
         securityContext:
           runAsUser: 59000
           runAsGroup: 59000
@@ -46,3 +46,8 @@ spec:
             memory: 100Mi
         ports:
         - containerPort: 9121
+        env:
+        - name: REDIS_ADDR
+          value: "redis://localhost:6379"
+        - name: REDIS_EXPORTER_LOG_LEVEL
+          value: "INFO"

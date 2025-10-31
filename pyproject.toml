@@ -1,0 +1,50 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["exporter"]
+
+[project]
+name = "redis-exporter-py"
+version = "1.0.0"
+description = "Prometheus Exporter for Redis metrics (Python version)"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "redis>=5.0.0",
+    "prometheus-client>=0.19.0",
+    "pytest>=8.4.2",
+    "pytest-cov>=7.0.0",
+    "fakeredis>=2.32.0",
+]
+keywords = ["redis", "prometheus", "exporter", "metrics", "monitoring"]
+
+[project.scripts]
+redis-exporter-py = "main:main"
+
+[project.urls]
+Homepage = "https://github.com/oliver006/redis_exporter"
+Documentation = "https://github.com/oliver006/redis_exporter"
+Repository = "https://github.com/oliver006/redis_exporter"
+Issues = "https://github.com/oliver006/redis_exporter/issues"
+
+[tool.uv]
+dev-dependencies = [
+    "pytest>=7.4.0",
+    "pytest-cov>=4.1.0",
+    "pytest-mock>=3.12.0",
+    "fakeredis>=2.20.0",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = "--cov=exporter --cov-report=html --cov-report=term-missing"
+markers = [
+    "unit: Unit tests with mocks",
+    "integration: Integration tests requiring Redis",
+]
+

@@ -1,7 +1,7 @@
 version: 2
 updates:
   # https://docs.github.com/en/github/administering-a-repository/configuration-options-for-dependency-updates
-  - package-ecosystem: "gomod"
+  - package-ecosystem: "pip"
     directory: "/"
     schedule:
       interval: "weekly"

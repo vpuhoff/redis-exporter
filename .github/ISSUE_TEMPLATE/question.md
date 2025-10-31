@@ -15,6 +15,9 @@ A clear and concise description of what the question is.
 What's the full command you're using to run the exporter? (please remove passwords and other sensitive data)
 Please include details about env variables, command line parameters, your orchestration setup, etc.
 
+**Python version**
+What Python version are you using? (python --version)
+
 
 **Screenshots**
 If applicable, add screenshots to help explain your question.

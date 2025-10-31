@@ -6,34 +6,6 @@ on:
       - 'v*'
 
 jobs:
-  release-binaries:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v5
-
-      - name: Setup Go
-        uses: actions/setup-go@v6
-        with:
-          go-version: '1.25'
-
-      - name: Build binaries
-        run: |
-          make build-all-binaries
-          ls -la 
-          ls -la .build/
-          ./package-github-binaries.sh
-          ls -la dist/
-
-      - name: Add binaries to release
-        uses: ncipollo/release-action@v1
-        with:
-          artifacts: "dist/*"
-          allowUpdates: true
-          omitBodyDuringUpdate: true
-
-
   build-and-push-docker-images:
     runs-on: ubuntu-latest
     permissions:
@@ -78,32 +50,20 @@ jobs:
         with:
           # list of Docker images to use as base name for tags
           images: |
-            oliver006/redis_exporter
-            ghcr.io/oliver006/redis_exporter
-            quay.io/oliver006/redis_exporter
+            oliver006/redis_exporter_py
+            ghcr.io/oliver006/redis_exporter_py
+            quay.io/oliver006/redis_exporter_py
 
-      - name: Build and push scratch image
+      - name: Build and push Python image
         uses: docker/build-push-action@v6
         with:
           context: .
-          target: scratch-release
-          platforms: linux/amd64,linux/arm,linux/arm64
+          file: ./Dockerfile
+          platforms: linux/amd64,linux/arm,linux/arm64,linux/arm/v7
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           build-args: |
-            TAG=${{ github.ref_name }}
-            SHA1=${{ github.sha }}
-
-      - name: Build and push alpine image
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          target: alpine
-          platforms: linux/amd64,linux/arm,linux/arm64
-          push: true
-          tags: oliver006/redis_exporter:${{ github.ref_name }}-alpine,ghcr.io/oliver006/redis_exporter:${{ github.ref_name }}-alpine,quay.io/oliver006/redis_exporter:${{ github.ref_name }}-alpine,oliver006/redis_exporter:alpine,ghcr.io/oliver006/redis_exporter:alpine,quay.io/oliver006/redis_exporter:alpine
-          labels: ${{ steps.meta.outputs.labels }}
-          build-args: |
-            TAG=${{ github.ref_name }}
-            SHA1=${{ github.sha }}
+            BUILD_VERSION=${{ github.ref_name }}
+            BUILD_DATE=$(date -u +%Y-%m-%dT%H:%M:%S)
+            BUILD_SHA=${{ github.sha }}

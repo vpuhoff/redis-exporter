@@ -1,138 +1,37 @@
+version: '3.8'
+
 services:
-
-  valkey9:
-    image: valkey/valkey:9
-    command: "valkey-server --enable-debug-command yes --protected-mode no"
+  redis7:
+    image: redis:7.4
+    command: "redis-server --enable-debug-command yes --protected-mode no"
     ports:
-      - "16382:6379"
       - "6379:6379"
-
-  valkey9-tls:
-    image: valkey/valkey:9
-    volumes:
-      - ./contrib/tls:/tls
-    command: |
-      valkey-server --enable-debug-command yes --protected-mode no
-      --tls-port 6379 --port 0
-      --tls-cert-file     /tls/redis.crt
-      --tls-key-file      /tls/redis.key
-      --tls-ca-cert-file  /tls/ca.crt
-    ports:
-      - "16386:6379"
-
-  valkey8-bundle:
-    image: valkey/valkey-bundle:8
-    command: "valkey-server --enable-debug-command yes --protected-mode no"
-    ports:
-      - "16389:6379"
-
-  valkey8:
-    image: valkey/valkey:8
-    command: "valkey-server --enable-debug-command yes --protected-mode no"
-    ports:
-      - "16384:6379"
-
-  redis8:
-    image: redis:8
-    command: "redis-server  --enable-debug-command yes --protected-mode no"
-    ports:
-      - "16388:6379"
+    networks:
+      - redis-network
 
   pwd-redis8:
     image: redis:8
     command: "redis-server --protected-mode no --requirepass redis-password"
     ports:
       - "16380:6379"
+    networks:
+      - redis-network
 
-  redis7:
-    image: redis:7.4
-    command: "redis-server  --enable-debug-command yes --protected-mode no"
+  redis-exporter:
+    build:
+      context: .
+      dockerfile: Dockerfile
     ports:
-      - "16385:6379"
-
-  redis7-tls:
-    image: redis:7.4
-    volumes:
-      - ./contrib/tls:/tls
-    command: |
-      redis-server --enable-debug-command yes --protected-mode no
-      --tls-port 6379 --port 0
-      --tls-cert-file     /tls/redis.crt
-      --tls-key-file      /tls/redis.key
-      --tls-ca-cert-file  /tls/ca.crt
-    ports:
-      - "16387:6379"
-
-  pwd-user-redis7:
-    image: redis:7.4
-    command: "redis-server --protected-mode no --requirepass dummy --user exporter on +CLIENT +INFO +SELECT +SLOWLOG +LATENCY '>exporter-password'"
-    ports:
-      - "16390:6379"
-
-  redis6:
-    image: redis:6.2
-    command: "redis-server --protected-mode no"
-    ports:
-      - "16379:6379"
-
-  redis5:
-    image: redis:5
-    command: "redis-server"
-    ports:
-      - "16383:6379"
-
-  redis-2-8:
-    image: redis:2.8
-    command: "redis-server"
-    ports:
-      - "16381:6379"
-
-  keydb-01:
-    image: "eqalpha/keydb:x86_64_v6.3.4"
-    command: "keydb-server --protected-mode no"
-    ports:
-      - "16401:6379"
-
-  keydb-02:
-    image: "eqalpha/keydb:x86_64_v6.3.1"
-    command: "keydb-server --protected-mode no --active-replica yes --replicaof keydb-01 6379"
-    ports:
-      - "16402:6379"
-
-  valkey-cluster:
-    image: oliver006/valkey-cluster:8.1.3
+      - "9121:9121"
     environment:
-      - IP=0.0.0.0
-    ports:
-      - 7000-7005:7000-7005
-      - 17000-17005:7000-7005
-
-  valkey-cluster-password:
-    image: oliver006/valkey-cluster:8.1.3
-    environment:
-      - IP=0.0.0.0
-      - INITIAL_PORT=7006
-      - VALKEY_PASSWORD=redis-password
-    ports:
-      - "17006:7006"
-
-
-  valkey-sentinel:
-    image: valkey/valkey:9
+      - REDIS_ADDR=redis://redis7:6379
+      - REDIS_EXPORTER_LOG_LEVEL=INFO
     depends_on:
-      - valkey8
-    ports:
-      - "26379:26379"
-    command: >
-      sh -c 'echo "sentinel resolve-hostnames yes" > /etc/sentinel.conf &&
-            echo "sentinel monitor mymaster valkey8 6379 1" >> /etc/sentinel.conf &&
-            echo "sentinel down-after-milliseconds mymaster 1000" >> /etc/sentinel.conf &&
-            echo "sentinel failover-timeout mymaster 5000" >> /etc/sentinel.conf &&
-            echo "sentinel parallel-syncs mymaster 1" >> /etc/sentinel.conf &&
-            valkey-server /etc/sentinel.conf --sentinel'
+      - redis7
+    networks:
+      - redis-network
 
+networks:
+  redis-network:
+    driver: bridge
 
-  tile38:
-    image: tile38/tile38:latest
-    ports:
-      - "19851:9851"

@@ -1,52 +1,20 @@
-ARG TARGETPLATFORM
+FROM python:3.11-alpine
 
-#
-# build container
-#
-FROM --platform=$BUILDPLATFORM golang:1.25-alpine AS builder
-WORKDIR /go/src/github.com/oliver006/redis_exporter/
+WORKDIR /app
 
-ADD . /go/src/github.com/oliver006/redis_exporter/
+# Install dependencies
+RUN pip install --no-cache-dir redis prometheus-client
 
-ARG SHA1="[no-sha]"
-ARG TAG="[no-tag]"
-ARG TARGETOS
-ARG TARGETARCH
+# Copy application code
+COPY . .
 
-#RUN printf "nameserver 1.1.1.1\nnameserver 8.8.8.8"> /etc/resolv.conf \ && apk --no-cache add ca-certificates git
+# Create non-root user
+RUN addgroup -g 59000 -S exporter && \
+    adduser -S -u 59000 -G exporter exporter && \
+    chown -R exporter:exporter /app
 
-RUN apk --no-cache add ca-certificates git
-RUN BUILD_DATE=$(date +%F-%T) CGO_ENABLED=0 GOOS=${TARGETOS} GOARCH=${TARGETARCH} go build -o /redis_exporter \
-    -ldflags  "-s -w -extldflags \"-static\" -X main.BuildVersion=$TAG -X main.BuildCommitSha=$SHA1 -X main.BuildDate=$BUILD_DATE" .
+USER exporter
 
-RUN [ "$TARGETARCH" = "amd64" ]  && /redis_exporter -version || ls -la /redis_exporter
+EXPOSE 9121
 
-#
-# scratch release container
-#
-FROM scratch AS scratch-release
-
-COPY --from=builder /redis_exporter /redis_exporter
-COPY --from=builder /etc/ssl/certs /etc/ssl/certs
-COPY --from=builder /etc/nsswitch.conf /etc/nsswitch.conf
-
-# Run as non-root user for secure environments
-USER 59000:59000
-
-EXPOSE     9121
-ENTRYPOINT [ "/redis_exporter" ]
-
-
-#
-# Alpine release container
-#
-FROM alpine:3.22 AS alpine
-
-COPY --from=builder /redis_exporter /redis_exporter
-COPY --from=builder /etc/ssl/certs /etc/ssl/certs
-
-# Run as non-root user for secure environments
-USER 59000:59000
-
-EXPOSE     9121
-ENTRYPOINT [ "/redis_exporter" ]
+CMD ["python", "main.py"]
