@@ -3,7 +3,7 @@ requires = ["setuptools>=65.0", "wheel", "setuptools_scm[toml]>=8.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "redis-exporter-py"
+name = "redis-exporter"
 description = "Prometheus Exporter for Redis metrics (Python version)"
 readme = "README.md"
 requires-python = ">=3.10"
@@ -31,7 +31,7 @@ classifiers = [
 ]
 
 [project.scripts]
-redis-exporter-py = "main:main"
+redis-exporter = "main:main"
 
 [project.urls]
 Homepage = "https://github.com/vpuhoff/redis-exporter"

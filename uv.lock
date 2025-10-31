@@ -252,7 +252,7 @@ wheels = [
 ]
 
 [[package]]
-name = "redis-exporter-py"
+name = "redis-exporter"
 source = { editable = "." }
 dependencies = [
     { name = "prometheus-client" },
