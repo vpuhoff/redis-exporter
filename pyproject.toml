@@ -17,7 +17,7 @@ dependencies = [
 ]
 keywords = ["redis", "prometheus", "exporter", "metrics", "monitoring"]
 authors = [
-    {name = "oliver006"},
+    {name = "vpuhoff"},
 ]
 license = {text = "MIT"}
 classifiers = [
@@ -37,10 +37,10 @@ classifiers = [
 redis-exporter-py = "main:main"
 
 [project.urls]
-Homepage = "https://github.com/oliver006/redis_exporter"
-Documentation = "https://github.com/oliver006/redis_exporter"
-Repository = "https://github.com/oliver006/redis_exporter"
-Issues = "https://github.com/oliver006/redis_exporter/issues"
+Homepage = "https://github.com/vpuhoff/redis-exporter"
+Documentation = "https://github.com/vpuhoff/redis-exporter"
+Repository = "https://github.com/vpuhoff/redis-exporter"
+Issues = "https://github.com/vpuhoff/redis-exporter/issues"
 
 [tool.uv]
 dev-dependencies = [

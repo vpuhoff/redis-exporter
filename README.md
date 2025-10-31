@@ -7,7 +7,10 @@ Prometheus экспортер для метрик Redis/Valkey, написанн
 
 ## Описание
 
-Это Python-версия [redis_exporter](https://github.com/oliver006/redis_exporter), предоставляющая базовый функционал для экспорта метрик Redis в формате Prometheus.
+Это Python-версия [redis_exporter](https://github.com/oliver006/redis_exporter) от [oliver006](https://github.com/oliver006), предоставляющая базовый функционал для экспорта метрик Redis в формате Prometheus.
+
+**Оригинальный проект:** [https://github.com/oliver006/redis_exporter](https://github.com/oliver006/redis_exporter)  
+**Текущий проект:** [https://github.com/vpuhoff/redis-exporter](https://github.com/vpuhoff/redis-exporter)
 
 ### Реализованные возможности
 
@@ -41,7 +44,7 @@ Prometheus экспортер для метрик Redis/Valkey, написанн
 
 ```bash
 # Из исходников
-git clone https://github.com/oliver006/redis_exporter.git
+git clone https://github.com/vpuhoff/redis-exporter.git
 cd redis-exporter
 pip install -e .
 
@@ -308,6 +311,6 @@ MIT License - см. файл [LICENSE](LICENSE)
 
 ## Поддержка
 
-- [Issues](https://github.com/oliver006/redis_exporter/issues)
-- [Discussions](https://github.com/oliver006/redis_exporter/discussions)
+- [Issues](https://github.com/vpuhoff/redis-exporter/issues)
+- [Discussions](https://github.com/vpuhoff/redis-exporter/discussions)
 
