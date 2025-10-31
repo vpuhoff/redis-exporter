@@ -27,3 +27,8 @@ ENV/
 *.egg-info/
 dist/
 build/
+htmlcov/
+.coverage
+.pytest_cache/
+*.cover
+.venv/
